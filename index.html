@@ -1,0 +1,753 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Digital Forensics & Malware Analysis Basics</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.3.1/reset.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.3.1/reveal.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.3.1/theme/white.min.css">
+    
+    <style>
+        /* Base styles */
+        html, body {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        .reveal {
+            width: 100%;
+            height: 100%;
+            background: #ffffff;
+            color: #333333;
+        }
+        
+        .reveal .slides {
+            width: 100% !important;
+            height: 100% !important;
+            text-align: left;
+        }
+        
+        .reveal section {
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        
+        /* Typography */
+        .reveal h1, .reveal h2, .reveal h3 { 
+            text-transform: none;
+            margin-bottom: 20px;
+        }
+        
+        .reveal h1 { color: #e74c3c; font-size: 2.2em; }
+        .reveal h2 { color: #3498db; font-size: 1.8em; }
+        .reveal h3 { color: #2c3e50; font-size: 1.4em; }
+        
+        .reveal p { 
+            font-size: 0.85em; 
+            line-height: 1.5;
+            color: #555555;
+        }
+        
+        .reveal ul, .reveal ol { 
+            display: block;
+            margin: 15px 0;
+        }
+        
+        .reveal li { 
+            margin-bottom: 10px; 
+            font-size: 0.8em;
+            color: #555555;
+        }
+        
+        .reveal strong {
+            color: #e74c3c;
+            font-weight: 600;
+        }
+        
+        /* Card and box styles */
+        .example-box { 
+            background: #ecf0f1; 
+            padding: 20px; 
+            border-radius: 8px; 
+            border-left: 5px solid #3498db; 
+            margin: 20px 0;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .quote-box { 
+            background: #fff3cd; 
+            padding: 25px; 
+            border-radius: 8px; 
+            border: 2px solid #ffc107; 
+            margin: 20px 0;
+            text-align: center;
+        }
+        
+        /* Table styles */
+        .comparison-table { 
+            font-size: 0.7em;
+            width: 100%;
+            margin: 20px 0;
+            background: #ffffff;
+            border-radius: 6px;
+            overflow: hidden;
+            border: 1px solid #ddd;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        
+        .comparison-table th { 
+            background: #3498db;
+            color: white;
+            padding: 12px 8px;
+            font-weight: 600;
+            text-align: left;
+        }
+        
+        .comparison-table td { 
+            padding: 10px 8px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        /* Title slide specific styles */
+        .title-slide h1 { 
+            font-size: 2.5em; 
+            color: #e74c3c;
+            text-align: center;
+        }
+        .title-slide h3 { 
+            font-size: 1.4em; 
+            color: #3498db;
+            text-align: center;
+        }
+        .title-slide p { 
+            font-size: 1em; 
+            color: #2c3e50;
+            text-align: center;
+            font-weight: 600;
+        }
+        
+        /* Responsive design */
+        @media (max-width: 768px) {
+            .reveal section {
+                padding: 15px;
+            }
+            
+            .reveal h1 { font-size: 1.8em; }
+            .reveal h2 { font-size: 1.5em; }
+            .reveal h3 { font-size: 1.2em; }
+            
+            .reveal p { font-size: 0.8em; }
+            .reveal li { font-size: 0.75em; }
+        }
+        
+        @media (max-width: 480px) {
+            .reveal section {
+                padding: 10px;
+            }
+            
+            .reveal h1 { font-size: 1.6em; }
+            .reveal h2 { font-size: 1.3em; }
+            .reveal h3 { font-size: 1.1em; }
+        }
+    </style>
+</head>
+<body>
+    <div class="reveal">
+        <div class="slides">
+
+            <!-- TITLE SLIDE -->
+            <section class="title-slide">
+                <h1>Digital Forensics & Malware Analysis</h1>
+                <h3>A Beginner's Guide to Digital Investigation</h3>
+                <p><strong>Designed by Dibakar Prasad Das for BPSPA</strong></p>
+            </section>
+
+            <!-- WELCOME SLIDE -->
+            <section>
+                <h2>Welcome to the Course</h2>
+                <div class="quote-box">
+                    <h3 style="color: #e67e22;">"I know nothing, yet I know who knows."</h3>
+                </div>
+                <ul>
+                    <li>This reminds us to accept the limits of our own knowledge</li>
+                    <li>Wisdom comes from recognizing where the answers lie and who holds the knowledge</li>
+                    <li>Curiosity keeps us open to learning and discovering new things</li>
+                    <li>Echoes Socrates' famous idea: "I know that I know nothing"</li>
+                    <li>Even when we don't know, we can find those who do</li>
+                </ul>
+                <div class="example-box">
+                    <strong>Let this mindset guide your journey of learning and exploration.</strong>
+                </div>
+            </section>
+
+            <!-- WHY THIS MATTERS SECTION -->
+            <section>
+                <section>
+                    <h2>Why This Matters</h2>
+                    <p>In today's world, <strong>nearly every crime has a digital footprint</strong>.</p>
+                    <ul>
+                        <li>A text message that places a suspect at a scene.</li>
+                        <li>A search history revealing intent.</li>
+                        <li>GPS data from a smartwatch.</li>
+                        <li>Financial records in a spreadsheet.</li>
+                    </ul>
+                    <div class="example-box">
+                        <strong>Digital Forensics</strong> is the science of finding, preserving, and interpreting this electronic evidence to serve justice.
+                    </div>
+                </section>
+
+                <section>
+                    <h2>CSI for Computers</h2>
+                    <p>Computer Forensics and Incident Response (DFIR) is essentially "CSI for Computers."</p>
+                    <p>It's the process of collecting, analyzing, and preserving digital evidence from computers, networks, and other digital devices to investigate:</p>
+                    <ul>
+                        <li><strong>What happened</strong></li>
+                        <li><strong>Who was responsible</strong></li>
+                        <li><strong>How to prevent it from happening again</strong></li>
+                    </ul>
+                </section>
+
+                <section>
+                    <h2>Breaking Down the Analogy</h2>
+                    <p>Let's compare traditional CSI with Digital Forensics:</p>
+                    <table class="comparison-table">
+                        <tr>
+                            <th>CSI (Crime Scene Investigation)</th>
+                            <th>Computer Forensics (CSI for Computers)</th>
+                        </tr>
+                        <tr>
+                            <td>Securing the Crime Scene</td>
+                            <td><strong>Isolating the System:</strong> Disconnecting from network, powering down safely to prevent evidence tampering</td>
+                        </tr>
+                        <tr>
+                            <td>Collecting Physical Evidence</td>
+                            <td><strong>Acquiring Digital Evidence:</strong> Creating forensically sound, bit-for-bit copies of hard drives, memory, and logs</td>
+                        </tr>
+                        <tr>
+                            <td>Fingerprint/DNA Analysis</td>
+                            <td><strong>File & Data Analysis:</strong> Examining file signatures, metadata, registry entries, and recovering deleted files</td>
+                        </tr>
+                    </table>
+                </section>
+
+                <section>
+                    <h2>Breaking Down the Analogy (Cont.)</h2>
+                    <table class="comparison-table">
+                        <tr>
+                            <th>CSI (Crime Scene Investigation)</th>
+                            <th>Computer Forensics (CSI for Computers)</th>
+                        </tr>
+                        <tr>
+                            <td>Weapon as Evidence</td>
+                            <td><strong>Malware Analysis:</strong> Identifying malicious software used in attack, how it works, and its origin</td>
+                        </tr>
+                        <tr>
+                            <td>Witness Testimony</td>
+                            <td><strong>Log File Analysis:</strong> Reviewing system, application, and network logs for timeline of events</td>
+                        </tr>
+                        <tr>
+                            <td>Reconstructing the Crime</td>
+                            <td><strong>Timeline Analysis & Reconstruction:</strong> Piecing together sequence of cyber incident events</td>
+                        </tr>
+                        <tr>
+                            <td>Presenting Evidence in Court</td>
+                            <td><strong>Expert Testimony & Reporting:</strong> Presenting technical findings understandably for legal proceedings</td>
+                        </tr>
+                    </table>
+                </section>
+
+                <section>
+                    <h2>Digital Crime Scenes</h2>
+                    <p>Digital evidence can be found in many places, just like a physical crime scene has multiple points of interest.</p>
+                    <div class="example-box">
+                        <strong>The Computer (Hard Drives, SSDs):</strong> The classic "crime scene" where investigators look for deleted files, internet history, installed programs, registry files, and communication logs.
+                    </div>
+                </section>
+
+                <section>
+                    <h2>Network: The Digital Highway</h2>
+                    <p><strong>Network Traffic:</strong> The "digital highway" where the crime occurred.</p>
+                    <ul>
+                        <li><strong>Firewall & Server Logs:</strong> Show connection attempts, successful breaches, and data exfiltration</li>
+                        <li><strong>Packet Captures:</strong> Recording of all data flowing over a network, analyzed to see exactly what was transmitted</li>
+                        <li><strong>Network Devices:</strong> Routers, switches, and access points contain connection data</li>
+                    </ul>
+                </section>
+
+                <section>
+                    <h2>Mobile & Cloud Evidence</h2>
+                    <p><strong>Mobile Devices (Phones, Tablets):</strong> A treasure trove of personal evidence including:</p>
+                    <ul>
+                        <li>Text Messages & Call Logs</li>
+                        <li>GPS Location Data</li>
+                        <li>App Data & Social Media Activity</li>
+                        <li>Photos and Videos (with metadata)</li>
+                    </ul>
+                    <p><strong>Cloud Services:</strong> The "off-site storage" that can be subpoenaed for emails, documents, and access logs.</p>
+                </section>
+
+                <section>
+                    <h2>Memory: The Crime Scene in Progress</h2>
+                    <p><strong>Memory (RAM):</strong> Analyzing live memory can reveal critical evidence:</p>
+                    <ul>
+                        <li><strong>Running Malware</strong> that isn't saved to the disk</li>
+                        <li><strong>Encryption Keys and passwords</strong> in clear text</li>
+                        <li><strong>Active Network Connections</strong> to command servers</li>
+                        <li><strong>Unencrypted data</strong> being processed</li>
+                    </ul>
+                    <div class="example-box">
+                        <strong>Note:</strong> RAM is volatile - turning off the computer erases this evidence forever!
+                    </div>
+                </section>
+
+                <section>
+                    <h2>Common Digital CSI Cases</h2>
+                    <ul>
+                        <li><strong>Corporate Espionage:</strong> Investigating data theft by insiders or external attackers</li>
+                        <li><strong>Hacking and Data Breaches:</strong> Determining how attackers got in and what they took</li>
+                        <li><strong>Employee Misconduct:</strong> Investigating policy violations like harassment or IP theft</li>
+                        <li><strong>Cybercrime:</strong> Tracking ransomware, phishing, and online fraud</li>
+                        <li><strong>Legal Disputes:</strong> Uncovering evidence in civil cases</li>
+                        <li><strong>Law Enforcement:</strong> Investigating terrorism, exploitation, and violent crimes</li>
+                    </ul>
+                </section>
+
+                <section>
+                    <h2>Core Principles of Digital Forensics</h2>
+                    <p>Just like physical CSI, computer forensics operates on strict principles to ensure evidence is admissible in court:</p>
+                    <ol>
+                        <li><strong>Minimize Handling/Corruption:</strong> The original evidence must be altered as little as possible</li>
+                        <li><strong>Document Everything:</strong> A clear, auditable trail of who handled the evidence, when, and why (the "chain of custody")</li>
+                        <li><strong>Analysis should be Repeatable:</strong> Any competent examiner should achieve the same results following the same procedures</li>
+                    </ol>
+                </section>
+
+                <section>
+                    <h2>In Summary</h2>
+                    <div class="example-box">
+                        <strong>Computer Forensics is the disciplined application of scientific methods to uncover the "who, what, when, where, and how" of a digital event, providing the evidence needed for accountability and justice.</strong>
+                    </div>
+                    <p>It bridges the gap between technical complexity and legal requirements, making digital evidence understandable and actionable in the pursuit of truth.</p>
+                </section>
+            </section>
+
+            <!-- METADATA AND LOGS SECTION -->
+            <section>
+                <section>
+                    <h2>Metadata and Logs in Cybercrime Investigations</h2>
+                    <p>Understanding the digital paper trail that helps solve crimes</p>
+                </section>
+
+                <section>
+                    <h3>What is Packet Metadata?</h3>
+                    <ul>
+                        <li>A label on each data packet showing important info like sender, receiver, time, and type</li>
+                        <li><strong>Example:</strong> Like an envelope showing who sent a letter, who gets it, and when it was sent</li>
+                        <li>Helps guide internet data to the right place</li>
+                        <li>Contains routing information but not the actual message content</li>
+                    </ul>
+                    <div class="example-box">
+                        <strong>Real-world:</strong> When you send an email, the metadata includes sender, recipient, timestamp, and subject line - but not the email body content.
+                    </div>
+                </section>
+
+                <section>
+                    <h3>Mandatory Packet Metadata</h3>
+                    <ul>
+                        <li><strong>Source IP address:</strong> Where the packet came from</li>
+                        <li><strong>Destination IP address:</strong> Where the packet goes</li>
+                        <li><strong>Protocol type:</strong> Type of message (TCP, UDP, HTTP)</li>
+                        <li><strong>Packet number:</strong> To keep messages in order</li>
+                        <li><strong>Timestamp:</strong> When the packet was sent</li>
+                    </ul>
+                    <div class="example-box">
+                        <strong>Example:</strong> Helps reorder parts of a message split into multiple packets, like putting together pieces of a puzzle in the right sequence.
+                    </div>
+                </section>
+
+                <section>
+                    <h3>Police Using Packet Metadata</h3>
+                    <ul>
+                        <li>Police capture network data to investigate crimes</li>
+                        <li><strong>Example:</strong> Tracking WhatsApp and Telegram messages during Delhi Riots</li>
+                        <li>Metadata shows who talked to whom, when, and how often</li>
+                        <li>Can establish communication patterns and networks</li>
+                        <li>Helps identify key individuals in criminal organizations</li>
+                    </ul>
+                </section>
+
+                <section>
+                    <h3>Where Police Find Metadata</h3>
+                    <ul>
+                        <li><strong>Suspect's device:</strong> If legally accessed and seized</li>
+                        <li><strong>Network devices:</strong> Routers, switches, and firewalls</li>
+                        <li><strong>Internet Service Providers:</strong> With legal permission or court orders</li>
+                        <li><strong>Packet sniffers:</strong> Tools like Wireshark that collect and analyze metadata</li>
+                        <li><strong>Mobile carriers:</strong> For cellular data and SMS metadata</li>
+                    </ul>
+                </section>
+
+                <section>
+                    <h3>Tools to Extract Metadata</h3>
+                    <ul>
+                        <li><strong>Packet sniffers</strong> capture packets and show metadata</li>
+                        <li><strong>Example:</strong> Wireshark lists source, destination, protocol, time, etc.</li>
+                        <li><strong>Network monitoring tools:</strong> Splunk, SolarWinds</li>
+                        <li><strong>Forensic tools:</strong> FTK, EnCase for device metadata</li>
+                        <li><strong>Mobile forensic tools:</strong> Cellebrite, Oxygen Forensic</li>
+                    </ul>
+                    <div class="example-box">
+                        <strong>Investigation:</strong> Helps police trace digital clues and establish timelines of criminal activities.
+                    </div>
+                </section>
+
+                <section>
+                    <h3>Useful Data Center Logs for Investigations</h3>
+                    <ul>
+                        <li><strong>Windows Event Logs:</strong> Diary of computer actions (who logged in, when)</li>
+                        <li><strong>Firewall Logs:</strong> Gatekeeper notes who tried to enter or was blocked</li>
+                        <li><strong>Security Software Logs:</strong> Guard dog alerts for viruses and malware</li>
+                        <li><strong>Web Server Logs:</strong> Visitor book of website access and activities</li>
+                        <li><strong>VPN Logs:</strong> Secret tunnel diary of remote logins and sessions</li>
+                        <li><strong>DNS Logs:</strong> Map of website addresses visited</li>
+                        <li><strong>Proxy Logs:</strong> Helper's diary of internet trips (shows when, where, and how much data)</li>
+                    </ul>
+                </section>
+
+                <section>
+                    <h3>Proxy Logs Example</h3>
+                    <div class="example-box">
+                        <strong>Forensic Value:</strong> Proxy logs show if someone tried visiting malicious websites or hiding their internet activities. They can reveal:<br><br>
+                        • Exact timestamps of website visits<br>
+                        • URLs accessed and search queries<br>
+                        • Amount of data transferred<br>
+                        • User identification information<br>
+                        • Attempts to bypass security controls
+                    </div>
+                    <p>These logs become crucial evidence in corporate espionage and unauthorized access cases.</p>
+                </section>
+            </section>
+
+            <!-- SECTION 1: REAL-WORLD APPLICATIONS -->
+            <section>
+                <section>
+                    <h2>1. Real-World Applications</h2>
+                    <p>Serving justice through data.</p>
+                </section>
+
+                <section>
+                    <h3>Practical Use Cases in Law Enforcement</h3>
+                    <ul>
+                        <li><strong>Cyberbullying & Harassment:</strong> Tracing anonymous emails and social media accounts.</li>
+                        <li><strong>Financial Fraud & Theft:</strong> Following the digital money trail in bank logs and spreadsheets.</li>
+                        <li><strong>Child Exploitation (CSAM):</strong> Identifying victims and perpetrators using digital evidence.</li>
+                        <li><strong>Homicide & Violent Crime:</strong> Using location data, search history, and communications to establish timeline and motive.</li>
+                    </ul>
+                </section>
+
+                <section>
+                    <h3>Legal Considerations</h3>
+                    <ul>
+                        <li><strong>Admissibility:</strong> Evidence must be gathered legally (Warrants vs. Consent).</li>
+                        <li><strong>Authenticity:</strong> Proving the evidence hasn't been tampered with (Hash values).</li>
+                        <li><strong>Expert Testimony:</strong> Explaining complex tech to a non-technical jury.</li>
+                    </ul>
+                </section>
+
+                <section>
+                    <h3>Case Study: Star Health Data Breach (India)</h3>
+                    <p>In 2024, hackers accessed Star Health's data center and stole personal and medical data of over 31 million customers.</p>
+                    <div class="example-box">
+                        Forensic investigators used metadata from logs and network traffic to trace how attackers gained access and which internal systems were compromised. This helped identify vulnerabilities and the path hackers used to steal data.
+                    </div>
+                    <p><strong>Lesson:</strong> Metadata from data center logs can reveal hidden details of attacks, even when hackers try to hide their tracks.</p>
+                </section>
+            </section>
+
+            <!-- SECTION 2: FORENSICS BASICS -->
+            <section>
+                <section>
+                    <h2>2. Forensics Basics</h2>
+                    <p>The foundational concepts of digital investigation.</p>
+                </section>
+
+                <section>
+                    <h3>Introduction to Digital Forensics</h3>
+                    <p><strong>Definition:</strong> The practice of collecting, analyzing, and reporting on digital data in a way that is legally admissible.</p>
+                    <ul>
+                        <li>Think of it as <strong>CSI for Computers</strong>.</li>
+                        <li>It connects the digital world to the physical legal world.</li>
+                    </ul>
+                    <div class="example-box">
+                        <strong>Analogy:</strong> Just as a detective looks for fingerprints on a gun, a digital forensic analyst looks for "digital fingerprints" (logs, timestamps) on a laptop.
+                    </div>
+                </section>
+
+                <section>
+                    <h3>Key Terminology</h3>
+                    <ul>
+                        <li><strong>Hash Value:</strong> A unique digital fingerprint of a file. If one bit changes, the hash changes.</li>
+                        <li><strong>Image (Forensic Copy):</strong> An exact bit-for-bit clone of a drive (including deleted space).</li>
+                        <li><strong>Artifact:</strong> Any object or data of interest (e.g., browser history, chat logs).</li>
+                    </ul>
+                </section>
+            </section>
+
+            <!-- SECTION 3: PRESERVATION, IDENTIFICATION & EXTRACTION -->
+            <section>
+                <section>
+                    <h2>3. Preservation, Identification & Extraction</h2>
+                    <p>How we handle evidence without breaking it.</p>
+                </section>
+
+                <section>
+                    <h3>Evidence Handling Procedures</h3>
+                    <p><strong>Chain of Custody:</strong> The documentation that proves who held the evidence, when, and why.</p>
+                    <ul>
+                        <li><strong>Rule #1:</strong> Never alter the original evidence.</li>
+                        <li><strong>Rule #2:</strong> Document everything.</li>
+                    </ul>
+                    <div class="example-box">
+                        <strong>Scenario:</strong> If you pick up a suspect's phone and accidentally open a text, you have altered the evidence (changed the "Last Accessed" date).
+                    </div>
+                </section>
+
+                <section>
+                    <h3>Data Preservation Techniques</h3>
+                    <ul>
+                        <li><strong>Write Blockers:</strong> Hardware devices that allow you to read a hard drive but physically prevent the computer from writing data back to it.</li>
+                        <li><strong>Faraday Bags:</strong> Bags that block signals (Wi-Fi, Cellular) so a phone cannot be remotely wiped.</li>
+                    </ul>
+                </section>
+
+                <section>
+                    <h3>Identification of Evidence Sources</h3>
+                    <p>Evidence isn't just on laptops. It is everywhere.</p>
+                    <ul>
+                        <li><strong>Standard:</strong> PC, Smartphone, USB drives.</li>
+                        <li><strong>Network:</strong> Routers, Firewalls, Servers.</li>
+                        <li><strong>IoT (Internet of Things):</strong> Smart speakers, Smart TVs, Car navigation systems.</li>
+                    </ul>
+                    <div class="example-box">
+                        <strong>Real Example:</strong> Police have used data from a suspect's Fitbit (heart rate spike) to determine the exact time of a murder.
+                    </div>
+                </section>
+            </section>
+
+            <!-- SECTION 4: MEMORY & BEHAVIORAL FORENSICS -->
+            <section>
+                <section>
+                    <h2>4. Memory & Behavioral Forensics</h2>
+                    <p>Catching what isn't on the hard drive.</p>
+                </section>
+
+                <section>
+                    <h3>Memory Forensics Overview</h3>
+                    <p><strong>RAM (Random Access Memory)</strong> is the computer's workspace. Many sophisticated attacks only exist in memory and never touch the hard drive ("Fileless Malware").</p>
+                    <div class="example-box">
+                        <strong>Note:</strong> If you turn the computer off, RAM data is lost forever. This is why we sometimes capture memory <em>before</em> pulling the plug.
+                    </div>
+                </section>
+
+                <section>
+                    <h3>Analyzing Volatile Data</h3>
+                    <ul>
+                        <li><strong>Running Processes:</strong> What programs are active right now?</li>
+                        <li><strong>Open Network Connections:</strong> Who is the computer talking to?</li>
+                        <li><strong>Passwords/Keys:</strong> Often stored in clear text in RAM.</li>
+                    </ul>
+                    <p><strong>Tool:</strong> Volatility Framework.</p>
+                </section>
+
+                <section>
+                    <h3>Key Behavioral Indicators</h3>
+                    <p>What looks suspicious?</p>
+                    <ul>
+                        <li><strong>Strange Parent-Child Relationships:</strong> e.g., Microsoft Word launching a Command Prompt (Very suspicious!).</li>
+                        <li><strong>Typosquatting:</strong> `svchost.exe` is normal. `scvhost.exe` is malware.</li>
+                        <li><strong>High CPU Usage:</strong> Could indicate crypto-mining malware.</li>
+                    </ul>
+                </section>
+            </section>
+
+            <!-- SECTION 5: MALWARE ANALYSIS TECHNIQUES -->
+            <section>
+                <section>
+                    <h2>5. Malware Analysis Techniques</h2>
+                    <p>Understanding malicious software.</p>
+                </section>
+
+                <section>
+                    <h3>Overview of Malware Types</h3>
+                    <ul>
+                        <li><strong>Virus:</strong> Attaches to a file and spreads.</li>
+                        <li><strong>Worm:</strong> Spreads through networks automatically.</li>
+                        <li><strong>Trojan:</strong> Looks like good software, but has a hidden bad purpose.</li>
+                        <li><strong>Ransomware:</strong> Locks your files and demands money.</li>
+                    </ul>
+                </section>
+
+                <section>
+                    <h3>Approaches to Malware Analysis</h3>
+                    <p>There are two main ways to analyze malware:</p>
+                    <ol>
+                        <li><strong>Static Analysis:</strong> Examining the code without running it (Safe).</li>
+                        <li><strong>Dynamic Analysis:</strong> Running the code to see what it does (Riskier).</li>
+                    </ol>
+                    <div class="example-box">
+                        <strong>Analogy:</strong> Static is looking at a bomb via X-Ray. Dynamic is detonating the bomb in a reinforced room to see how big the explosion is.
+                    </div>
+                </section>
+            </section>
+
+            <!-- SECTION 6: STATIC ANALYSIS -->
+            <section>
+                <section>
+                    <h2>6. Static Analysis</h2>
+                    <p>Dissecting the code safely.</p>
+                </section>
+
+                <section>
+                    <h3>Definition and Process</h3>
+                    <p>Static analysis involves gathering information about the malicious file without executing it.</p>
+                    <ul>
+                        <li>We look at the file headers (identity card).</li>
+                        <li>We look at the "Strings" (readable text inside the code).</li>
+                    </ul>
+                </section>
+
+                <section>
+                    <h3>Common Tools</h3>
+                    <ul>
+                        <li><strong>Strings:</strong> A command that pulls out text like URLs, IP addresses, or error messages hidden in the binary.</li>
+                        <li><strong>PEStudio:</strong> Quickly shows suspicious indicators in Windows files.</li>
+                        <li><strong>VirusTotal:</strong> Checks if other antivirus engines recognize the file.</li>
+                    </ul>
+                </section>
+            </section>
+
+            <!-- SECTION 7: DYNAMIC ANALYSIS -->
+            <section>
+                <section>
+                    <h2>7. Dynamic Analysis</h2>
+                    <p>Behavioral monitoring.</p>
+                </section>
+
+                <section>
+                    <h3>What is Dynamic Analysis?</h3>
+                    <p>Executing the malware in a controlled environment, known as a <strong>Sandbox</strong> or <strong>Virtual Machine</strong>.</p>
+                    <div class="example-box">
+                        <strong>Goal:</strong> We want to answer: "If I double-click this, what happens to the computer?"
+                    </div>
+                </section>
+
+                <section>
+                    <h3>Monitoring Malware Behavior</h3>
+                    <p>We watch for three main things:</p>
+                    <ul>
+                        <li><strong>File System:</strong> Does it create new files or delete backups?</li>
+                        <li><strong>Registry:</strong> Does it change settings to start up automatically?</li>
+                        <li><strong>Network:</strong> Does it try to call a "Command and Control" server?</li>
+                    </ul>
+                </section>
+            </section>
+
+            <!-- SECTION 8: NETWORK FORENSICS & INCIDENT RESPONSE -->
+            <section>
+                <section>
+                    <h2>8. Network Forensics & Incident Response</h2>
+                    <p>Analyzing the traffic and responding to the breach.</p>
+                </section>
+
+                <section>
+                    <h3>Introduction to Network Forensics</h3>
+                    <p>Monitoring and analyzing computer network traffic.</p>
+                    <ul>
+                        <li>Focuses on the "pipes" between computers rather than the computers themselves.</li>
+                        <li>Can help reconstruct files transferred over the network.</li>
+                    </ul>
+                </section>
+
+                <section>
+                    <h3>Capturing and Analyzing Traffic</h3>
+                    <ul>
+                        <li><strong>PCAP (Packet Capture):</strong> A file containing recorded network traffic.</li>
+                        <li><strong>Wireshark:</strong> The most popular tool to visualize packets.</li>
+                        <li>We look for connections to blacklisted IP addresses or large amounts of data leaving the network (Exfiltration).</li>
+                    </ul>
+                </section>
+
+                <section>
+                    <h3>Steps in Incident Response (IR)</h3>
+                    <p>The standard lifecycle (PICERL):</p>
+                    <ol>
+                        <li><strong>Preparation:</strong> Being ready.</li>
+                        <li><strong>Identification:</strong> Detecting the hack.</li>
+                        <li><strong>Containment:</strong> Stopping the bleeding (unplugging).</li>
+                        <li><strong>Eradication:</strong> Removing the malware.</li>
+                        <li><strong>Recovery:</strong> Restoring systems.</li>
+                        <li><strong>Lessons Learned:</strong> Improving for next time.</li>
+                    </ol>
+                </section>
+            </section>
+
+            <!-- SECTION 9: POST-INCIDENT RECOVERY & LESSONS LEARNED -->
+            <section>
+                <section>
+                    <h2>9. Post-Incident Recovery & Lessons Learned</h2>
+                    <p>Getting back to business.</p>
+                </section>
+
+                <section>
+                    <h3>Recovery Procedures</h3>
+                    <ul>
+                        <li>Restoring data from clean, offline backups.</li>
+                        <li>Changing all passwords (admin, user, service accounts).</li>
+                        <li>Patching the vulnerability that allowed the entry.</li>
+                        <li><strong>Validation:</strong> Monitoring closely for 48 hours to ensure the attacker is truly gone.</li>
+                    </ul>
+                </section>
+
+                <section>
+                    <h3>Lessons Learned Implementation</h3>
+                    <ul>
+                        <li>Update policies (e.g., "No USB drives").</li>
+                        <li>Improve detection rules.</li>
+                        <li>Conduct training for employees (e.g., Phishing simulations).</li>
+                        <li><strong>Goal:</strong> Continuous Improvement.</li>
+                    </ul>
+                </section>
+            </section>
+
+            <section>
+                <h2>Thank You</h2>
+                <p>Questions?</p>
+            </section>
+
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.3.1/reveal.js"></script>
+    <script>
+        Reveal.initialize({
+            controls: true,
+            progress: true,
+            center: true,
+            hash: true,
+            transition: 'slide',
+            width: '100%',
+            height: '100%',
+            margin: 0.04,
+            minScale: 0.2,
+            maxScale: 2.0,
+            touch: true,
+            slideNumber: true
+        });
+    </script>
+</body>
+</html>
